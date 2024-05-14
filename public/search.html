@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #search-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #log-results {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto 0;
+        }
+        #log-results h2 {
+            margin-top: 0;
+        }
+        #log-results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #log-results li {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        #loading {
+            text-align: center;
+            color: #333;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Log Search</h1>
+    <form id="search-form" action="/search" method="GET">
+        <label for="level">Level:</label>
+        <input type="text" id="level" name="level" placeholder="Enter log level...">
+        
+        <label for="log-string">Log String:</label>
+        <input type="text" id="log-string" name="log_string" placeholder="Enter log string...">
+        
+        <label for="start">Start Date:</label>
+        <input type="datetime-local" id="start" name="start">
+        
+        <label for="end">End Date:</label>
+        <input type="datetime-local" id="end" name="end">
+        
+        <label for="source">Source:</label>
+        <input type="text" id="source" name="source" placeholder="Enter log source...">
+        
+        <button type="submit">Search</button>
+    </form>
+    <div id="loading">Loading...</div>
+    <div id="log-results"></div>
+
+    <script>
+        const searchForm = document.getElementById('search-form');
+        const logResults = document.getElementById('log-results');
+        const loading = document.getElementById('loading');
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            logResults.innerHTML = '';
+            loading.style.display = 'block';
+
+            const formData = new FormData(searchForm);
+            const queryParams = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch(`/search?${queryParams}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                displayLogs(data);
+            } catch (error) {
+                console.error('Error searching logs:', error.message);
+                logResults.innerHTML = `<p>Error: ${error.message}</p>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayLogs(logs) {
+            let html = '<h2>Search Results</h2>';
+            if (logs.length === 0) {
+                html += '<p>No logs found.</p>';
+            } else {
+                html += '<ul>';
+                logs.forEach(log => {
+                    html += `<li>${JSON.stringify(log, null, 2)}</li>`;
+                });
+                html += '</ul>';
+            }
+            logResults.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
