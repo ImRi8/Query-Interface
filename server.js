@@ -1,16 +1,24 @@
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
 const { createFile } = require("./utils");
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+const logDir = process.env.LOG_DIR || 'logs';
+
+// Ensure log directory exists
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+}
 
 const logConfiguration = {
     transports: [
         new winston.transports.Console(),
         new winston.transports.File({
-            filename: 'logs/server.log',
+            filename: path.join(logDir, 'server.log'),
             level: 'info'
         })
     ],
@@ -54,7 +62,7 @@ app.post('/log/:source', (req, res) => {
         }
     };
 
-    const logFilePath = `logs/${source}.log`;
+    const logFilePath = path.join(logDir, `${source}.log`);
 
     if (!fs.existsSync(logFilePath)) {
         createFile(logFilePath);
@@ -73,7 +81,7 @@ app.post('/log/:source', (req, res) => {
 
 app.get('/search', (req, res) => {
     const { level, log_string, start, end, source } = req.query;
-    const logFolderPath = path.join(__dirname, 'logs');
+    const logFolderPath = logDir;
 
     try {
         const logFiles = fs.readdirSync(logFolderPath).filter(file => file.endsWith('.log'));
@@ -89,7 +97,6 @@ app.get('/search', (req, res) => {
                     const log = JSON.parse(line);
                     const logTimestamp = new Date(log.timestamp).getTime(); 
 
-                    
                     const regex = new RegExp(log_string, 'i');
                     const isLogStringMatched = !log_string || regex.test(log.log_string);
 
@@ -109,6 +116,11 @@ app.get('/search', (req, res) => {
         logger.error(`Error reading log files: ${err.message}`);
         res.status(500).json({ error: "Internal Server Error" });
     }
+});
+
+app.use((err, req, res, next) => {
+    logger.error(`Unhandled error: ${err.message}`);
+    res.status(500).json({ error: "Internal Server Error" });
 });
 
 app.listen(port, () => {
