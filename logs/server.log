@@ -1,0 +1,14 @@
+2024-05-14 14:21:29 info: Server started at http://localhost:3000
+2024-05-14 14:21:32 info: GET /
+2024-05-14 14:21:32 error: Unhandled error: ENOENT: no such file or directory, stat '/home/rishabh/Documents/Chat360/Queryinterface/public/search.html'
+2024-05-14 14:21:36 info: GET /serviceworker.js
+2024-05-14 14:22:06 info: GET /serviceworker.js
+2024-05-14 14:23:32 info: GET /
+2024-05-14 14:23:32 error: Unhandled error: ENOENT: no such file or directory, stat '/home/rishabh/Documents/Chat360/Queryinterface/public/search.html'
+2024-05-14 14:23:35 info: GET /serviceworker.js
+2024-05-14 14:23:42 info: Server started at http://localhost:3000
+2024-05-14 14:23:44 info: GET /
+2024-05-14 14:23:47 info: GET /serviceworker.js
+2024-05-14 14:24:18 info: Server started at http://localhost:3000
+2024-05-14 14:24:25 info: GET /serviceworker.js
+2024-05-14 14:24:55 info: GET /serviceworker.js

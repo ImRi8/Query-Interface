@@ -31,7 +31,7 @@ const logConfiguration = {
 };
 const logger = winston.createLogger(logConfiguration);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '')));
 
 app.set("view engine", "ejs");
 
@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'search.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/log/:source', (req, res) => {
